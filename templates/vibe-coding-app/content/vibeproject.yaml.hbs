@@ -1,0 +1,58 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: {{ parameters.component_id }}
+  description: |
+    Vibe Coding Application
+    Adheres to:
+    - Deep Task Analysis Framework (DTAF)
+    - Plan-Do-Check-Act (PDCA) cycle
+    - Observe-Orient-Decide-Act (OODA) loop for debugging
+    - Custom modes injected from the template
+  annotations:
+    github.com/project-slug: lvdongchen/Agent_Optimization
+    backstage.io/techdocs-ref: docs
+spec:
+  type: service
+  lifecycle: production
+  owner: {{ parameters.owner }}
+  system: system:default
+  providesApis:
+    - {{ parameters.component_id }}
+  consumesApis:
+    - api:default
+  dependsOn:
+    - resource:default
+  parameters:
+    - name: provider
+      value: secret
+    - name: namespace
+      value: default
+    - name: repository
+      value: github.com/lvdongchen/Agent_Optimization
+    - name: owner
+      value: user:guest
+    - name: sourceUrl
+      value: github.com/lvdongchen/Agent_Optimization
+    - name: defaultAlias
+      value: {{ parameters.component_id }}
+    - name: parent
+      value: system:default
+  sourceLocation:
+    type: url
+    target: https://github.com/lvdongchen/Agent_Optimization
+    branch: main
+  rules:
+    - match:
+        path: /vibeproject.yaml
+      location: repo:vibe-coding-app
+      type: structural
+    - match:
+        path: /modes/
+      location: repo:vibe-coding-app
+      type: structural
+    - match:
+        path: /.roo/
+      location: repo:vibe-coding-app
+      type: structural

@@ -1,0 +1,25 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: {{name}}
+  description: Vibe Coding Project with {{mode_name}} mode
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: {{repositoryUrl}}
+    vibecoding.io/mode-slug: {{mode_slug}}
+    vibecoding.io/mode-name: {{mode_name}}
+  tags:
+    - javascript
+    - react
+    - vibecoding
+spec:
+  type: service
+  lifecycle: experimental
+  owner: user:guest
+  system: default
+  providesApis:
+    - {{name}}-api
+  consumesApis:
+    - user:guest:default/user-api
+  dependsOn:
+    - resource:default

@@ -1,0 +1,100 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: vibe-coding-app
+  title: Vibe Coding App Scaffolder
+  description: Scaffolds a new Vibe Coding application with dynamic mode injection support.
+  tags:
+    - javascript
+    - react
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+spec:
+  owner: user:guest
+  type: service
+
+  parameters:
+    - title: Project Details
+      type: object
+      required:
+        - name
+        - mode_slug
+        - mode_name
+      properties:
+        name:
+          title: Name
+          type: string
+          ui:widget: text
+          description: Unique name of this project
+          ui:description: |
+            The name of the project, used for the folder and service name.
+        mode_slug:
+          title: Mode Slug
+          type: string
+          ui:widget: text
+          description: Slug for the custom mode (e.g., technical-maestro)
+        mode_name:
+          title: Mode Name
+          type: string
+          ui:widget: text
+          description: Full name of the mode (e.g., Technical Maestro)
+        repositoryUrl:
+          title: Repository Location
+          type: string
+          ui:widget: text
+          description: GitHub repo URL (optional, for publishing)
+          ui:description: |
+            The GitHub repository URL to create the project in.
+
+    - title: Choose a location
+      type: object
+      required:
+        - repositoryUrl
+      properties:
+        repositoryUrl:
+          title: Repository Location
+          type: string
+          ui:widget: text
+          ui:autofocus: true
+          ui:placeholder: https://github.com/my-org/my-project
+          description: The GitHub repository to create the project in.
+          target:
+            $template: "https://github.com/{{ parameters.repositoryUrl }}/new/main?value={{ templateUrl }}"
+
+  steps:
+    - id: base
+      name: Create Base Application
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          name: ${{ parameters.name }}
+          mode_slug: ${{ parameters.mode_slug }}
+          mode_name: ${{ parameters.mode_name }}
+          repoUrl: ${{ parameters.repositoryUrl }}
+
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        repoUrl: ${{ parameters.repositoryUrl }}
+        defaultBranch: main
+        allowPrivate: true
+
+    - id: inject-mode
+      name: Inject Mode Configuration
+      action: debug:log
+      input:
+        message: Injecting mode ${{ parameters.mode_slug }} into app config
+
+    - id: generate-entity
+      name: Generate Entity YAML
+      action: debug:log
+      input:
+        message: Generating vibeproject.yaml with mode injection
+
+    - id: setup-scripts
+      name: Add Setup Scripts
+      action: debug:log
+      input:
+        message: Adding post-scaffold scripts for deps and entity sync
